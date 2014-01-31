@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="contactmanager:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="ContactManager.war">
+      <element id="artifact" artifact-name="contactmanager:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="org.jsoup:jsoup:1.7.3" />
+          <element id="library" level="project" name="junit:junit:4.11" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
