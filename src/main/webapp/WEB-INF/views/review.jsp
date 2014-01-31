@@ -17,6 +17,7 @@
             $("#tours").change(function () {
                 var id = $(this).val();
                 var dataString = 'id=' + id;
+                $('#listMatchesRef').attr('href','matches/'+id);
                 $.getJSON('/choiseTour?'+dataString, function (data) {
                     $.each(data, function (key, val) {
                         $('#teams').append(
@@ -33,6 +34,19 @@
                 if(idTour != "none"){
                     $.ajax({
                         url: "/updateTeams",
+                        type: "GET",
+                        data: "id="+idTour,
+                        success: function(html){
+//                            location.reload();
+                        }
+                    });
+                }
+            });
+            $('#createMatches').click(function(){
+                var idTour = $("#tours :selected").val();
+                if(idTour != "none"){
+                    $.ajax({
+                        url: "/createMatches",
                         type: "GET",
                         data: "id="+idTour,
                         success: function(html){
@@ -62,6 +76,7 @@
     </tr>
 </table>
 <input type="button" id="updateTeams" value="Обновить команды">
-
+<input type="button" id="createMatches" value="Создать расписание">
+<a id="listMatchesRef" href="#">Список матчей</a>
 </body>
 </html>

@@ -13,5 +13,9 @@
 		<mapping class="net.pss.beck.domain.Matches" />
 		<mapping class="net.pss.beck.domain.PlayersInTeams" />
 		<mapping class="net.pss.beck.domain.TeamsInTournament" />
+		<mapping class="net.pss.beck.domain.Users" />
+		<mapping class="net.pss.beck.domain.MatchAnalyse" />
+		<mapping class="net.pss.beck.domain.PushedMarkers" />
+		<mapping class="net.pss.beck.domain.Markers" />
 	</session-factory>
 </hibernate-configuration>

@@ -17,6 +17,6 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
-  <component name="RegexUtilComponent" text="23.03.1989 Ohne Berater" flags="0" regex="\D" mode="0" />
+  <component name="RegexUtilComponent" text="03.06.1972 in Bobruisk  " flags="0" regex="\D+" mode="0" />
 </project>
 

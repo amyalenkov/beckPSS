@@ -1,13 +1,12 @@
 package net.pss.beck.service;
  
-import java.util.List;
-
+import net.pss.beck.dao.ContactDAO;
+import net.pss.beck.domain.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
- 
-import net.pss.beck.dao.ContactDAO;
-import net.pss.beck.domain.Contact;
+
+import java.util.List;
  
 @Service
 public class ContactServiceImpl implements ContactService {

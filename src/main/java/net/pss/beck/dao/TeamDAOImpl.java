@@ -32,8 +32,8 @@ public class TeamDAOImpl implements TeamDAO {
     }
 
     public Team getTeamById(Integer id){
-        return (Team) sessionFactory.
-                getCurrentSession().createQuery("from Team where id="+id).uniqueResult();
+        return (Team) getSession(sessionFactory).
+                createQuery("from Team where id="+id).uniqueResult();
     }
 
     @Override

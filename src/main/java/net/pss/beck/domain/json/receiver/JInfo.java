@@ -17,10 +17,18 @@ public class JInfo implements Serializable{
     @JsonProperty("userName")
     private String userName;
 
-    public JInfo(String matchId, String timeId, String userName) {
+    @JsonProperty("markerFirst")
+    private String markerFirst;
+
+    @JsonProperty("markerLast")
+    private String markerLast;
+
+    public JInfo(String matchId, String timeId, String userName, String markerLast, String markerFirst) {
         this.matchId = matchId;
         this.timeId = timeId;
         this.userName = userName;
+        this.markerFirst = markerFirst;
+        this.markerLast = markerLast;
     }
 
     public JInfo(){
@@ -49,5 +57,21 @@ public class JInfo implements Serializable{
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getMarkerLast() {
+        return markerLast;
+    }
+
+    public void setMarkerLast(String markerLast) {
+        this.markerLast = markerLast;
+    }
+
+    public String getMarkerFirst() {
+        return markerFirst;
+    }
+
+    public void setMarkerFirst(String markerFirst) {
+        this.markerFirst = markerFirst;
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by amyalenkov on 07.01.14.
  */
@@ -20,4 +22,18 @@ public class MatchesServiceImpl implements MatchesService {
     public void addMatches(Matches matches) {
         matchesDAO.addMatches(matches);
     }
+
+    @Override
+    @Transactional
+    public List<Matches> getAllMatchesInTournament(Integer tourId){
+        return matchesDAO.getAllMatchesInTournament(tourId);
+    }
+
+    @Override
+    @Transactional
+    public Matches getMatchById(Integer idMatch){
+        return matchesDAO.getMatchById(idMatch);
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package net.pss.beck.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by amyalenkov on 07.01.14.
@@ -34,6 +35,9 @@ public class Matches {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_TEAM_2")
     private Team team2;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "match")
+    private List<MatchAnalyse> matchesList;
 
 
 

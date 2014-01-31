@@ -3,10 +3,18 @@ package net.pss.beck.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.pss.beck.domain.*;
-import net.pss.beck.domain.json.JSender;
-import net.pss.beck.domain.json.JTeam;
+import net.pss.beck.domain.json.receiver.JInfo;
+import net.pss.beck.domain.json.receiver.JMarker;
+import net.pss.beck.domain.json.receiver.JReceiver;
+import net.pss.beck.domain.json.receiver.JTeam;
+import net.pss.beck.domain.json.sender.JMatch;
+import net.pss.beck.domain.json.sender.JPlayer;
+import net.pss.beck.parser.MatchParser;
+import net.pss.beck.parser.ParserService;
 import net.pss.beck.parser.ParserServiceImpl;
 import net.pss.beck.service.*;
+import net.pss.beck.updater.UpdateMatches;
+import net.pss.beck.updater.UpdateMatchesImpl;
 import net.pss.beck.updater.UpdatePlayersInTeamImpl;
 import net.pss.beck.updater.UpdateTeamsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +55,18 @@ public class ContactController {
 
     @Autowired
     private TeamsInTournamentService teamsInTournamentService;
+
+    @Autowired
+    private MatchAnalyseService matchAnalyseService;
+
+    @Autowired
+    private PushedMarkersService pushedMarkersService;
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private MarkerService markerService;
 
 //	@RequestMapping("/index")
 //	public String listTours(Map<String, Object> map) {
@@ -174,6 +194,161 @@ public class ContactController {
         return "teams";
     }
 
+    @RequestMapping("/matches/{tourId}")
+    public String getMatchesInTournament(@PathVariable("tourId") Integer tourId, Model model) {
+        List<Matches> matchesList = matchesService.getAllMatchesInTournament(tourId);
+        model.addAttribute("matches", matchesList);
+        return "matches";
+    }
+
+    @RequestMapping(value ="/createMatches", method = RequestMethod.GET)
+    public void createMatches(@RequestParam Integer id) throws IOException {
+        Tournament tournament = tournamentService.getTournamentById(id);
+        System.out.println(tournament.getName());
+        UpdateMatches updateMatches = new UpdateMatchesImpl();
+        List<MatchParser> matchParserList = updateMatches.getMatchesFromTournament(tournament);
+        for(MatchParser matchParser : matchParserList){
+            Matches match = new Matches();
+            match.setTournament(tournament);
+            System.out.println(tournament.getName());
+            match.setData(matchParser.getData());
+            System.out.println(matchParser.getData());
+            match.setStage(matchParser.getStage());
+            System.out.println(matchParser.getStage());
+            Team team1 = teamService.getTeamByName(matchParser.getTeam1());
+            Team team2 = teamService.getTeamByName(matchParser.getTeam2());
+            match.setTeam1(team1);
+            System.out.println(team1.getId());
+            match.setTeam2(team2);
+            System.out.println(team2.getId());
+            match.setReferee(getReferee(matchParser));
+            matchesService.addMatches(match);
+            System.out.println("-----------------"+match.getData());
+        }
+//        return "matches/"+id;
+    }
+
+    private Referee getReferee(MatchParser matchParser) throws IOException {
+        ParserService parserService = new ParserServiceImpl();
+        Referee refereeNew = parserService.getRefereeFromMatch(matchParser.getRefereeLink());
+        System.out.println("ref "+refereeNew.getLastName());
+        List<Referee> refereeList = refereeService.getAllReferee();
+        List<String> refLastNameAndData = new ArrayList<String>();
+        for(Referee referee : refereeList){
+            refLastNameAndData.add(referee.getLastName()+referee.getData());
+        }
+        if(!refLastNameAndData.contains(refereeNew.getLastName()+refereeNew.getData())){
+            System.out.println("add ref");
+            refereeService.addReferee(refereeNew);
+            return refereeService.getRefereeByLastNameData(refereeNew);
+        }
+        else {
+            System.out.println("get ref");
+            return refereeService.getRefereeByLastNameData(refereeNew);
+        }
+    }
+
+    @RequestMapping(value = "/json", method = RequestMethod.POST)
+    @ResponseBody
+    public String saveMarkers(@RequestBody String markers) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JReceiver receiver = mapper.readValue(markers, JReceiver.class);
+        JInfo info = receiver.getInfo();
+        List<JMarker> jMarkers = receiver.getMarkers();
+        MatchAnalyse matchAnalyse = getMatchTime(Integer.valueOf(info.getMatchId()), info.getTimeId());
+        PushedMarkers pushedMarker = new PushedMarkers();
+        System.out.println(matchAnalyse.getId());
+        pushedMarker.setMatchTime(matchAnalyse);
+        pushedMarker.setMarkerFirst(info.getMarkerFirst());
+        pushedMarker.setMarkerLast(info.getMarkerLast());
+        pushedMarker.setFullTime(false);
+        pushedMarker.setUser(usersService.getUserByName(info.getUserName()));
+        pushedMarkersService.addPushedMarkers(pushedMarker);
+        addMarkers(matchAnalyse,jMarkers);
+        return "Hello";
+    }
+
+    private void addMarkers(MatchAnalyse matchAnalyse, List<JMarker> jMarkers){
+        for(JMarker jMarker : jMarkers){
+            Markers markers = new Markers();
+            markers.setMatchTime(matchAnalyse);
+            markers.setIdMarker(jMarker.getId());
+            markers.setAddAction(jMarker.getAddAction());
+            markers.setBasicAction(jMarker.getBasicAction());
+            markers.setPartBody(jMarker.getPartBody());
+            markers.setTeam1(jMarker.getTeam1());
+            markers.setPlayer1(jMarker.getPlayer1());
+            markers.setTeam2(jMarker.getTeam2());
+            markers.setPlayer2(jMarker.getPlayer2());
+            markers.setTime(jMarker.getTime());
+            markerService.addMarker(markers);
+        }
+        if(jMarkers.get(jMarkers.size()-1).getBasicAction().equals("FULL TIME")){
+            matchAnalyse.setStatus("complete");
+            matchAnalyseService.addMatchTime(matchAnalyse);
+        }
+    }
+
+    private MatchAnalyse getMatchTime(Integer matchId, String timeId){
+        MatchAnalyse matchAnalyse = matchAnalyseService.getMatchAnalyse(matchId,timeId);
+        if(matchAnalyse == null){
+            matchAnalyse = new MatchAnalyse();
+            matchAnalyse.setMatch(matchesService.getMatchById(matchId));
+            matchAnalyse.setTime(timeId);
+            matchAnalyse.setStatus("incomplete");
+            matchAnalyseService.addMatchTime(matchAnalyse);
+            return matchAnalyseService.getMatchAnalyse(matchId,timeId);
+        }else {
+            return matchAnalyseService.getMatchAnalyse(matchId,timeId);
+        }
+    }
+
+    @RequestMapping(value = "/getMatchById", method = RequestMethod.GET)
+    @ResponseBody
+    public String getMatchInfoById(@RequestParam Integer idMatch) throws IOException {
+        System.out.println("idMatch "+idMatch);
+        Matches matches =  matchesService.getMatchById(idMatch);
+        System.out.println(matches.getTeam1());
+        Team team1 = teamService.getTeamById(matches.getTeam1().getId());
+        Team team2 = teamService.getTeamById(matches.getTeam2().getId());
+        List<Player> playersTeam1 = playersInTeamsService.getPlayersByTeam(team1);
+        List<Player> playersTeam2 = playersInTeamsService.getPlayersByTeam(team2);
+        ObjectMapper mapper = new ObjectMapper();
+        JMatch jMatch = new JMatch();
+        net.pss.beck.domain.json.sender.JTeam jTeam1 = new net.pss.beck.domain.json.sender.JTeam();
+        net.pss.beck.domain.json.sender.JTeam jTeam2 = new net.pss.beck.domain.json.sender.JTeam();
+
+        List<JPlayer> jPlayerList1 = new ArrayList<JPlayer>();
+        List<JPlayer> jPlayerList2 = new ArrayList<JPlayer>();
+        for(Player player : playersTeam1){
+            jPlayerList1.add(new JPlayer(String.valueOf(player.getId()),player.getLastName(),player.getFirstName(),
+                    playersInTeamsService.getPlayersInTeamByTeamAndPlayer(team1,player).getNumber()));
+        }
+        for(Player player : playersTeam2){
+            jPlayerList2.add(new JPlayer(String.valueOf(player.getId()),player.getLastName(),player.getFirstName(),
+                    playersInTeamsService.getPlayersInTeamByTeamAndPlayer(team2,player).getNumber()));
+        }
+        jTeam1.setId(String.valueOf(team1.getId()));
+        jTeam1.setName(team1.getName());
+        jTeam1.setPlayers(jPlayerList1);
+        jTeam2.setId(String.valueOf(team2.getId()));
+        jTeam2.setName(team2.getName());
+        jTeam2.setPlayers(jPlayerList2);
+        jMatch.setTeam1(jTeam1);
+        jMatch.setTeam2(jTeam2);
+        jMatch.setId(String.valueOf(idMatch));
+        jMatch.setData(matches.getData());
+        jMatch.setStage(matches.getStage());
+        jMatch.setReferee(matches.getReferee().getLastName());
+        jMatch.setTourName(matches.getTournament().getName()+matches.getTournament().getData());
+        return mapper.writeValueAsString(jMatch);
+    }
+
+
+
+
+
+
     @RequestMapping("/")
     public String home() {
         return "redirect:/index";
@@ -196,14 +371,7 @@ public class ContactController {
         return "redirect:/index";
     }
 
-    @RequestMapping(value = "/json", method = RequestMethod.POST)
-    @ResponseBody
-    public String check(@RequestBody String markers) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JSender sender = mapper.readValue(markers, JSender.class);
 
-        return "Hello";
-    }
 
     @RequestMapping(value = "/save_all_tours", method = RequestMethod.POST)
     public String saveTours() {
@@ -254,7 +422,7 @@ public class ContactController {
 //        List<Player> players = new ArrayList<Player>();
 //        players.add(player);
 //        team.setPlayers(players);
-//        teamService.addTeam(team);
+//        teamService.addReferee(team);
 //        player.setTeam(team);
 //        playerService.addPlayer(player);
 //        ParserServiceImpl parserService = new ParserServiceImpl();
@@ -346,7 +514,7 @@ public class ContactController {
         playerService.addPlayer(player1);
         playerService.addPlayer(player2);
 
-        refereeService.addTeam(referee);
+        refereeService.addReferee(referee);
         matchesService.addMatches(matches);
 
         playersInTeamsService.addPlayerInTeam(playersInTeams1);

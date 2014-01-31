@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
   <data-source source="LOCAL" name="MySQL - @localhost" uuid="a378da3d-870e-4fe8-9355-4f2c2c39041d">
-    <database-info product="MySQL" version="5.5.34-0ubuntu0.12.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.26 ( Revision: ${bzr.revision-id} )">
+    <database-info product="MySQL" version="5.5.35-0ubuntu0.12.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.26 ( Revision: ${bzr.revision-id} )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
@@ -19,6 +19,21 @@
       <column name="TELEPHONE" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="ID"/>
     </table>
+    <table name="MARKERS" schema="" catalog="contactmanager" type="TABLE">
+      <column name="ID" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="ADD_ACTION" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="BASIC_ACTION" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="ID_MARKER" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="PART_BODY" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="Player1" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="Player2" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="Team1" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="Team2" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="Time" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="MATCH_TIME_ID" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="ID"/>
+      <foreign-key name="FK5CD17F594A9B0D7" columns="MATCH_TIME_ID" ref-table="MATCH_ANALYSE" ref-schema="" ref-catalog="contactmanager" ref-columns="MATCH_TIME_ID" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
     <table name="MATCHES" schema="" catalog="contactmanager" type="TABLE">
       <column name="ID_MATCH" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="DATA" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
@@ -28,10 +43,25 @@
       <column name="ID_TEAM_2" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <column name="ID_TOURNAMENT" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="ID_MATCH"/>
-      <foreign-key name="FK5CEA15134D867601" columns="ID_TEAM_1" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5CEA151313E322C6" columns="ID_REFEREE" ref-table="REFEREES" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_REFEREE" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5CEA151331422D8C" columns="ID_TOURNAMENT" ref-table="TOURNAMENTS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TOURNAMENT" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK5CEA1513414EE1E7" columns="ID_TOURNAMENT" ref-table="TOURNAMENTS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TOURNAMENT" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK5CEA15134513444B" columns="ID_REFEREE" ref-table="REFEREES" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_REFEREE" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5CEA15134D867601" columns="ID_TEAM_1" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK5CEA15134D867602" columns="ID_TEAM_2" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5CEA15135A30A166" columns="ID_TEAM_1" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5CEA15135A30A167" columns="ID_TEAM_2" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="FKB2DCFBB92CF016B2" table="MATCH_ANALYSE" schema="" catalog="contactmanager" columns="MATCH_ID"/>
+    </table>
+    <table name="MATCH_ANALYSE" schema="" catalog="contactmanager" type="TABLE">
+      <column name="MATCH_TIME_ID" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="STATUS" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="TIME_ID" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="MATCH_ID" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="MATCH_TIME_ID"/>
+      <foreign-key name="FKB2DCFBB92CF016B2" columns="MATCH_ID" ref-table="MATCHES" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_MATCH" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="FK5CD17F594A9B0D7" table="MARKERS" schema="" catalog="contactmanager" columns="MATCH_TIME_ID"/>
+      <exported-key name="FK49152E534A9B0D7" table="PUSHED_MARKERS" schema="" catalog="contactmanager" columns="MATCH_TIME_ID"/>
     </table>
     <table name="PLAYERS" schema="" catalog="contactmanager" type="TABLE">
       <column name="ID_PLAYER" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
@@ -40,6 +70,7 @@
       <column name="FIRST_NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <column name="LAST_NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="ID_PLAYER"/>
+      <exported-key name="FKD126560934609C7C" table="PLAYERS_IN_TEAMS" schema="" catalog="contactmanager" columns="ID_PLAYER"/>
       <exported-key name="FKD1265609A993B657" table="PLAYERS_IN_TEAMS" schema="" catalog="contactmanager" columns="ID_PLAYER"/>
     </table>
     <table name="PLAYERS_IN_TEAMS" schema="" catalog="contactmanager" type="TABLE">
@@ -48,8 +79,21 @@
       <column name="ID_PLAYER" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <column name="ID_TEAM" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="ID"/>
-      <foreign-key name="FKD1265609DEE4268F" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKD126560934609C7C" columns="ID_PLAYER" ref-table="PLAYERS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_PLAYER" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FKD1265609A993B657" columns="ID_PLAYER" ref-table="PLAYERS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_PLAYER" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKD1265609DEE4268F" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKD1265609EB8E51F4" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="PUSHED_MARKERS" schema="" catalog="contactmanager" type="TABLE">
+      <column name="ID" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="FULL_TIME" sqlType="BIT" length="1" precision="0" nullable="true" jdbcType="-7"/>
+      <column name="MARKER_FIRST" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="MARKER_LAST" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="MATCH_TIME_ID" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <column name="USER_ID" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="ID"/>
+      <foreign-key name="FK49152E534A9B0D7" columns="MATCH_TIME_ID" ref-table="MATCH_ANALYSE" ref-schema="" ref-catalog="contactmanager" ref-columns="MATCH_TIME_ID" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK49152E538F926641" columns="USER_ID" ref-table="USERS" ref-schema="" ref-catalog="contactmanager" ref-columns="USER_ID" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <table name="REFEREES" schema="" catalog="contactmanager" type="TABLE">
       <column name="ID_REFEREE" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
@@ -58,6 +102,7 @@
       <column name="FIRST_NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <column name="LAST_NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="ID_REFEREE"/>
+      <exported-key name="FK5CEA151313E322C6" table="MATCHES" schema="" catalog="contactmanager" columns="ID_REFEREE"/>
       <exported-key name="FK5CEA15134513444B" table="MATCHES" schema="" catalog="contactmanager" columns="ID_REFEREE"/>
     </table>
     <table name="TEAMS" schema="" catalog="contactmanager" type="TABLE">
@@ -67,24 +112,40 @@
       <primary-key name="PRIMARY" columns="ID_TEAM"/>
       <exported-key name="FK5CEA15134D867601" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TEAM_1"/>
       <exported-key name="FK5CEA15134D867602" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TEAM_2"/>
+      <exported-key name="FK5CEA15135A30A166" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TEAM_1"/>
+      <exported-key name="FK5CEA15135A30A167" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TEAM_2"/>
       <exported-key name="FKD1265609DEE4268F" table="PLAYERS_IN_TEAMS" schema="" catalog="contactmanager" columns="ID_TEAM"/>
+      <exported-key name="FKD1265609EB8E51F4" table="PLAYERS_IN_TEAMS" schema="" catalog="contactmanager" columns="ID_TEAM"/>
       <exported-key name="FK3C943E5ADEE4268F" table="TEAMS_IN_TOURNAMENT" schema="" catalog="contactmanager" columns="ID_TEAM"/>
+      <exported-key name="FK3C943E5AEB8E51F4" table="TEAMS_IN_TOURNAMENT" schema="" catalog="contactmanager" columns="ID_TEAM"/>
     </table>
     <table name="TEAMS_IN_TOURNAMENT" schema="" catalog="contactmanager" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="ID_TEAM" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <column name="ID_TOURNAMENT" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <foreign-key name="FK3C943E5ADEE4268F" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK3C943E5A31422D8C" columns="ID_TOURNAMENT" ref-table="TOURNAMENTS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TOURNAMENT" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK3C943E5A414EE1E7" columns="ID_TOURNAMENT" ref-table="TOURNAMENTS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TOURNAMENT" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK3C943E5ADEE4268F" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK3C943E5AEB8E51F4" columns="ID_TEAM" ref-table="TEAMS" ref-schema="" ref-catalog="contactmanager" ref-columns="ID_TEAM" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <table name="TOURNAMENTS" schema="" catalog="contactmanager" type="TABLE">
       <column name="ID_TOURNAMENT" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="DATA" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <column name="NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="ID_TOURNAMENT"/>
+      <exported-key name="FK5CEA151331422D8C" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TOURNAMENT"/>
       <exported-key name="FK5CEA1513414EE1E7" table="MATCHES" schema="" catalog="contactmanager" columns="ID_TOURNAMENT"/>
+      <exported-key name="FK3C943E5A31422D8C" table="TEAMS_IN_TOURNAMENT" schema="" catalog="contactmanager" columns="ID_TOURNAMENT"/>
       <exported-key name="FK3C943E5A414EE1E7" table="TEAMS_IN_TOURNAMENT" schema="" catalog="contactmanager" columns="ID_TOURNAMENT"/>
+    </table>
+    <table name="USERS" schema="" catalog="contactmanager" type="TABLE">
+      <column name="USER_ID" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="USER_NAME" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="PASSWORD" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="USER_ROLE" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="USER_ID"/>
+      <exported-key name="FK49152E538F926641" table="PUSHED_MARKERS" schema="" catalog="contactmanager" columns="USER_ID"/>
     </table>
     <table name="CHARACTER_SETS" schema="" catalog="information_schema" type="SYSTEM TABLE">
       <column name="CHARACTER_SET_NAME" sqlType="VARCHAR" length="32" precision="0" nullable="false" jdbcType="12" def="Jyc="/>

@@ -1,6 +1,7 @@
 package net.pss.beck.parser;
 
 import net.pss.beck.domain.Player;
+import net.pss.beck.domain.Referee;
 import net.pss.beck.domain.Team;
 import net.pss.beck.domain.Tournament;
 
@@ -20,4 +21,13 @@ public class ParserServiceImpl extends ParserHelper implements ParserService {
     public List<Player> getAllPlayersOfTeam(Team team, Tournament tournament) throws IOException {
         return getPlayersOfTeam(team.getName(),tournament.getName());
     }
+
+    public List<MatchParser> getAllMatchesInTournament(String tournamentName) throws IOException {
+        return getMatches(tournamentName);
+    }
+
+    public Referee getRefereeFromMatch(String matchUlr) throws IOException {
+        return getReferee(matchUlr);
+    }
+
 }
